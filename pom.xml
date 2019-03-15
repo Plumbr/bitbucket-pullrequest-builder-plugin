@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
@@ -9,13 +10,15 @@
   <artifactId>bitbucket-pullrequest-builder</artifactId>
   <name>Bitbucket Pullrequest Builder Plugin</name>
   <version>1.5.0-SNAPSHOT</version>
-  <description>This Jenkins plugin builds pull requests from Bitbucket.org and will report the test results.</description>
+  <description>This Jenkins plugin builds pull requests from Bitbucket.org and will report the test results.
+  </description>
   <packaging>hpi</packaging>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Bitbucket+pullrequest+builder+plugin</url>    
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Bitbucket+pullrequest+builder+plugin</url>
 
   <scm>
     <connection>scm:git:ssh://git@github.com/jenkinsci/bitbucket-pullrequest-builder-plugin.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/bitbucket-pullrequest-builder-plugin.git</developerConnection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/bitbucket-pullrequest-builder-plugin.git
+    </developerConnection>
     <url>https://github.com/jenkinsci/bitbucket-pullrequest-builder-plugin.git</url>
     <tag>HEAD</tag>
   </scm>
@@ -30,10 +33,15 @@
       <name>Martin Damovsky</name>
       <email>martin.damovsky@gmail.com</email>
     </developer>
-  </developers>  
-    
+    <developer>
+      <id>iNikem</id>
+      <name>Nikita Salnikov-Tarnovski</name>
+      <email>nikita@plumbr.io</email>
+    </developer>
+  </developers>
+
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
-    <repositories>
+  <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
       <url>https://repo.jenkins-ci.org/public/</url>
@@ -65,6 +73,11 @@
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>git</artifactId>
       <version>2.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>mercurial</artifactId>
+      <version>2.4</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci</groupId>
