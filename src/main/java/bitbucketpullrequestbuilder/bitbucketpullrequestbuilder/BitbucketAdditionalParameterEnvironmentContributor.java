@@ -10,8 +10,7 @@ import java.io.IOException;
 @Extension
 public class BitbucketAdditionalParameterEnvironmentContributor extends EnvironmentContributor {
     @Override
-    public void buildEnvironmentFor(Run run, EnvVars envVars, TaskListener taskListener)
-            throws IOException, InterruptedException {
+    public void buildEnvironmentFor(Run run, EnvVars envVars, TaskListener taskListener) {
 
         BitbucketCause cause = (BitbucketCause) run.getCause(BitbucketCause.class);
         if (cause == null) {

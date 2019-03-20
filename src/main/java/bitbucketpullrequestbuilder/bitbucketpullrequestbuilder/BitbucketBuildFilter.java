@@ -217,12 +217,13 @@ public class BitbucketBuildFilter {
     }
 
     StringBuffer filter = new StringBuffer(defaultFilter);
-    final String includes = gitscm.getIncludes();
-    if (includes != null && !includes.isEmpty()) {
-      for(String part : includes.split("\\s+")) {
-        filter.append(String.format("%s ", part.replaceAll("\\*\\/", "d:")));
-      }
-    }    
+    final String includes = null;
+//    final String includes = gitscm.getIncludes();
+//    if (includes != null && !includes.isEmpty()) {
+//      for(String part : includes.split("\\s+")) {
+//        filter.append(String.format("%s ", part.replaceAll("\\*\\/", "d:")));
+//      }
+//    }
     
     logger.log(Level.FINE, "Git includes transformation to filter result: {1} -> {0}; default: {2}", new Object[]{ filter, includes, defaultFilter });
     return filter.toString().trim();

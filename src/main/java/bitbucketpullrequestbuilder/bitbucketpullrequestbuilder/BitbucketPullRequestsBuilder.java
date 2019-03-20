@@ -1,6 +1,7 @@
 package bitbucketpullrequestbuilder.bitbucketpullrequestbuilder;
 
 import bitbucketpullrequestbuilder.bitbucketpullrequestbuilder.bitbucket.AbstractPullrequest;
+import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Job;
@@ -31,16 +32,14 @@ public class BitbucketPullRequestsBuilder {
   private BitbucketRepository repository;
   private BitbucketBuilds builds;
 
-  public static BitbucketPullRequestsBuilder getBuilder() {
-    return new BitbucketPullRequestsBuilder();
+  public BitbucketPullRequestsBuilder(Job<?, ?> job, BitbucketBuildTrigger trigger, String username, String password) {
+    this.job = Objects.requireNonNull(job);
+    this.trigger = Objects.requireNonNull(trigger);
+    this.repository = new BitbucketRepository(this, username, password);
+    this.builds = new BitbucketBuilds(this.trigger, this.repository);
   }
 
-  public void stop() {
-    // TODO?
-  }
-
-  public void run() {
-    this.repository.init();
+  void findAndSchedulePullRequests() {
     LogTaskListener taskListener = new LogTaskListener(logger, Level.INFO);
 
     List<AbstractPullrequest> targetPullRequests = new ArrayList<>();
@@ -52,19 +51,19 @@ public class BitbucketPullRequestsBuilder {
 
     this.repository.addFutureBuildTasks(targetPullRequests);
   }
-
   /*
     Checks if given pull request changed files that this job is interested in.
     Mostly to filter out changes outside of the specified modules.
   */
+
   private boolean isRelevant(AbstractPullrequest pullRequest, TaskListener taskListener) {
+    logger.log(Level.FINE, "Started on {}", DateFormat.getDateTimeInstance().format(new Date()));
+
+    SCMTriggerItem scmTriggerItem = Objects.requireNonNull(SCMTriggerItem.SCMTriggerItems.asSCMTriggerItem(job));
+    MercurialSCM scm = (MercurialSCM) scmTriggerItem.getSCMs().iterator().next();
+    String initialRevision = scm.getRevision();
+
     try {
-      logger.log(Level.FINE, "Started on {}", DateFormat.getDateTimeInstance().format(new Date()));
-
-      SCMTriggerItem scmTriggerItem = Objects.requireNonNull(SCMTriggerItem.SCMTriggerItems.asSCMTriggerItem(job));
-      MercurialSCM scm = (MercurialSCM) scmTriggerItem.getSCMs().iterator().next();
-      String initialRevision = scm.getRevision();
-
       Launcher.LocalLauncher launcher = new Launcher.LocalLauncher(taskListener);
       File repository = new File(System.getProperty("java.io.tmpdir"), job.getName());
 
@@ -78,7 +77,6 @@ public class BitbucketPullRequestsBuilder {
       PollingResult pollingResult = scm.compareRemoteRevisionWith(job, launcher, new FilePath(repository), taskListener, destinationBranchState);
 
       logger.log(Level.INFO, "Branch changes are {0}", pollingResult.change);
-      scm.setRevision(initialRevision);
 
       return pollingResult.hasChanges();
     } catch (Exception e) {
@@ -86,6 +84,8 @@ public class BitbucketPullRequestsBuilder {
       logger.log(Level.SEVERE, "Failed to record SCM polling", e);
       //If cannot determine changes, build anyway
       return true;
+    } finally {
+      scm.setRevision(initialRevision);
     }
   }
 
@@ -95,24 +95,6 @@ public class BitbucketPullRequestsBuilder {
     return scm.calcRevisionsFromBuild(job.getLastBuild(), new FilePath(repository), launcher, listener);
   }
 
-
-  public BitbucketPullRequestsBuilder setupBuilder() {
-    if (this.job == null || this.trigger == null) {
-      throw new IllegalStateException();
-    }
-    this.repository = new BitbucketRepository(this.trigger.getProjectPath(), this);
-    this.repository.init();
-    this.builds = new BitbucketBuilds(this.trigger, this.repository);
-    return this;
-  }
-
-  public void setJob(Job<?, ?> job) {
-    this.job = job;
-  }
-
-  public void setTrigger(BitbucketBuildTrigger trigger) {
-    this.trigger = trigger;
-  }
 
   public Job<?, ?> getJob() {
     return this.job;
