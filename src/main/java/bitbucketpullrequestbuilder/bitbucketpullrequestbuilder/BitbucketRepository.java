@@ -68,7 +68,6 @@ public class BitbucketRepository {
   }
 
   private <T extends ApiClient.HttpClientFactory> ApiClient initApiClient(String username, String password, T httpFactory) {
-    logger.info("Got username " + username + " and password " + password);
     if (this.trigger.isCloud()) {
       return createCloudClient(httpFactory, username, password);
     } else {
